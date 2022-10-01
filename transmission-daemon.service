@@ -1,0 +1,14 @@
+[Unit]
+Description=Transmission BitTorrent Daemon
+After=network.target
+
+[Service]
+User=steve
+Type=notify
+ExecStart=/usr/bin/transmission-daemon -f --log-error --no-auth --logfile "/home/steve/transmission/current.log" --download-dir "/home/steve/transmission/complete/" --incomplete-dir "/home/steve/transmission/downloading/"
+ExecStop=/bin/kill -s STOP $MAINPID
+ExecReload=/bin/kill -s HUP $MAINPID
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

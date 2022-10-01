@@ -1,0 +1,14 @@
+[Unit]
+Description=Migrate completed torrents
+After=transmission-daemon.service
+
+[Service]
+User=steve
+Type=simple
+ExecStart=/bin/bash -c '/home/steve/.scripts/migrate-downloaded-torrents.sh'
+ExecStop=/bin/kill -s STOP $MAINPID
+ExecReload=/bin/kill -s HUP $MAINPID
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
