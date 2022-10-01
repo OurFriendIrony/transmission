@@ -11,8 +11,7 @@ app.post('/torrent', (req, res) => {
 
   console.log(`[POST  ] /torrent - ${m}`)
   try {
-    addTorrentByMagnet(m)
-    res.send()
+    res.json(addTorrentByMagnet(m))
   } catch(err) {
     res.status(400)
     res.json(getError(err))
@@ -24,8 +23,7 @@ app.delete('/torrent/:id', (req, res) => {
 
   console.log(`[DELETE] /torrent/${id}`)
   try {
-    deleteTorrentById(id)
-    res.send()
+    res.json(deleteTorrentById(id))
   } catch(err) {
     res.status(400)
     res.json(getError(err))
@@ -71,6 +69,7 @@ function getTorrents() {
 
 function addTorrentByMagnet(magnet) {
   out = execSync(`transmission-remote -a "${magnet}"`).toString()
+  return getOK()
 }
 
 function getTorrentById(id) {
@@ -86,12 +85,19 @@ function getTorrentById(id) {
 
 function deleteTorrentById(id) {
   execSync(`transmission-remote -t ${id} -r`).toString()
+  return getOK()
 }
 
 function getError(err) {
   return {
     "status"  : "failed",
     "message" : err.message
+  }
+}
+
+function getOk() {
+  return {
+    "status"  : "ok"
   }
 }
 
