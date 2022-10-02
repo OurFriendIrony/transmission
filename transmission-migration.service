@@ -5,7 +5,7 @@ After=transmission-daemon.service
 [Service]
 User=steve
 Type=simple
-ExecStart=/bin/bash -c '/home/steve/.scripts/migrate-downloaded-torrents.sh'
+ExecStart=/bin/bash -c 'node /home/steve/.scripts/migrate-downloaded-torrents.js'
 ExecStop=/bin/kill -s STOP $MAINPID
 ExecReload=/bin/kill -s HUP $MAINPID
 NoNewPrivileges=true
