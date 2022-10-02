@@ -2,10 +2,22 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const execSync = require('child_process').execSync;
 
+//==================================================
+
 const app = express();
+const DONE_STATES = [
+  "Seeding",
+  "Stopped",
+  "Finished",
+  "Idle"
+]
+
+//==================================================
+// Define the API
 
 app.use(bodyParser.json());
 
+// POST Magnet
 app.post('/torrent', (req, res) => {
   m = req.body.magnet
 
@@ -18,6 +30,7 @@ app.post('/torrent', (req, res) => {
   }
 })
 
+// DELETE Torrent
 app.delete('/torrent/:id', (req, res) => {
   id = req.params.id
 
@@ -30,6 +43,7 @@ app.delete('/torrent/:id', (req, res) => {
   }
 })
 
+// GET Torrent
 app.get('/torrent/:id', (req, res) => {
   id = req.params.id
 
@@ -42,6 +56,7 @@ app.get('/torrent/:id', (req, res) => {
   }
 })
 
+// GET All Torrents
 app.get('/', (req, res) => {
   console.log(`[GET   ] /`)
   try {
@@ -51,10 +66,15 @@ app.get('/', (req, res) => {
   }
 })
 
-app.listen(3000, () => console.log('server started'));
+// Start Server
+app.listen(3000, () => {
+  console.log('server started')
+})
 
-// ###########################################
+//==================================================
+// Parse transmission results
 
+// List
 function getTorrents() {
   out = execSync(`transmission-remote -l | sed -e '1d' -e '$d' | awk '{print $1}' | sed -e 's/[^0-9]*//g'`).toString()
   ids = out.split("\n")
@@ -67,26 +87,37 @@ function getTorrents() {
   return arr
 }
 
+// Add
 function addTorrentByMagnet(magnet) {
   out = execSync(`transmission-remote -a "${magnet}"`).toString()
   return getOK()
 }
 
+// Get by Id
 function getTorrentById(id) {
   out = execSync(`transmission-remote -t ${id} -i`).toString()
+  p = (/\s\Percent Done: (.*)%\n/g).exec(out)[1]
+  pF = parseFloat(p == "nan" ? 0 : p)
+  s = (/\s\State: (.*)\n/g).exec(out)[1]
   return {
-    "id": id,
-    "name":(/\s\sName: (.*)\n/g).exec(out)[1],
-    "state":(/\s\State: (.*)\n/g).exec(out)[1],
-    "perc":(/\s\Percent Done: (.*)\n/g).exec(out)[1],
-    "eta":(/\s\ETA: (.*)\n/g).exec(out)[1]
+    "id"      : id,
+    "name"    : (/\s\sName: (.*)\n/g).exec(out)[1],
+    "state"   : s,
+    "perc"    : pF,
+    "eta"     : (/\s\ETA: (.*)\n/g).exec(out)[1],
+    "location": (/\s\Location: (.*)\n/g).exec(out)[1],
+    "done"    : (pF >= 100 && DONE_STATES.includes(s))
   }
 }
 
+// Delete by Id
 function deleteTorrentById(id) {
   execSync(`transmission-remote -t ${id} -r`).toString()
   return getOK()
 }
+
+//==================================================
+// Common Response Payloads
 
 function getError(err) {
   return {
