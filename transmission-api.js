@@ -104,8 +104,9 @@ function getTorrentById(id) {
     "name"    : (/\s\sName: (.*)\n/g).exec(out)[1],
     "state"   : s,
     "perc"    : pF,
-    "eta"     : (/\s\ETA: (.*)\n/g).exec(out)[1],
+    "eta"     : (/\s\ETA: (.*)\s\(.*\)\n/g).exec(out)[1],
     "location": (/\s\Location: (.*)\n/g).exec(out)[1],
+    "size"    : (/\s\Total size: (.*)\s\(.*\)\n/g).exec(out)[1],
     "done"    : (pF >= 100 && DONE_STATES.includes(s))
   }
 }
