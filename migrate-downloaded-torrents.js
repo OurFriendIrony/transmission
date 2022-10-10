@@ -12,11 +12,11 @@ const SLEEP = 60
 const DEST_TV       = "/home/steve/media/tvshows"
 const DEST_FILM     = "/home/steve/media/films"
 const VALID_EXTENSIONS = [
-  "avi",
-  "mkv",
-  "mp4",
-  "srt",
-  "mpg"
+  ".avi",
+  ".mkv",
+  ".mp4",
+  ".srt",
+  ".mpg"
 ]
 
 //==================================================
@@ -36,37 +36,37 @@ async function rmTorrent(id) {
 }
 
 // 'walk' identifies all resources in a given directory
-async function walk(dir, fileList = []) {
-  const files = await fs.readdir(dir)
-  for (const file of files) {
+async function walk(entry, fileList = []) {
+  const stat = await fs.stat(entry)
 
-    const stat = await fs.stat(path.join(dir, file))
-
-    if (stat.isDirectory()) {
-      // Directory - recurse
-      fileList = await walk(path.join(dir, file), fileList)
-
-    } else {
-      payload = {}
-      payload["file"]     = file
-      payload["ext"]      = file.split(".").pop()
-      payload["garbage"]  = !VALID_EXTENSIONS.includes(payload["ext"])
-      payload["src"]      = dir
-
-      // Identify if this is a film or tvshow
-      regex = /(?<name>.*)[S|s](?<season>\d{2})[E|e](?<episode>\d{2}).*/
-      m = file.match(regex)
-      if (m == null) {
-        payload["dest"] = DEST_FILM
-      } else {
-        series = m.groups['name'].replace(/["."]/g,' ').trim()
-        season = parseInt(m.groups['season'])
-        payload["dest"] = `${DEST_TV}/${series}/Season ${season}`
-      }
-
-      // Add to identified resources
-      fileList.push(payload)
+  if (stat.isDirectory()) {
+    // Target is a directory, recurse through it's children
+    const children = await fs.readdir(entry)
+    for (const child of children) {
+      nextEntry = path.join(entry, child)
+      fileList = await walk(nextEntry, fileList)
     }
+  } else {
+    // Target is a file, parse it
+    const f = await path.parse(entry)
+
+    payload = {}
+    payload["file"]     = f.base
+    payload["ext"]      = f.ext
+    payload["garbage"]  = !VALID_EXTENSIONS.includes(payload["ext"])
+    payload["src"]      = f.dir
+
+    // Identify if this is a film or tvshow
+    regex = /(?<name>.*)[S|s](?<season>\d{2})[E|e](?<episode>\d{2}).*/
+    m = payload["file"].match(regex)
+    if (m == null) {
+      payload["dest"] = DEST_FILM
+    } else {
+      series = m.groups['name'].replace(/["."]/g,' ').trim()
+      season = parseInt(m.groups['season'])
+      payload["dest"] = `${DEST_TV}/${series}/Season ${season}`
+    }
+    fileList.push(payload)
   }
 
   return fileList
@@ -93,7 +93,6 @@ function process(torrent){
 setInterval(() => {
   getTorrents()
     .then((torrents) => {
-    console.log("spam")
       torrents.forEach((torrent) => {
         if (torrent["done"]) {
           rmTorrent(torrent["id"])
