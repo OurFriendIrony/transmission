@@ -9,8 +9,8 @@ const HOST  = "192.168.1.184"
 const PORT  = "3000"
 const SLEEP = 60
 
-const DEST_TV       = "/home/steve/media/tvshows"
-const DEST_FILM     = "/home/steve/media/films"
+const DEST_TV       = "/opt/media/tvshows"
+const DEST_FILM     = "/opt/media/films"
 const VALID_EXTENSIONS = [
   ".avi",
   ".mkv",
@@ -60,11 +60,11 @@ async function walk(entry, fileList = []) {
     regex = /(?<name>.*)[S|s](?<season>\d{2})[E|e](?<episode>\d{2}).*/
     m = payload["file"].match(regex)
     if (m == null) {
-      payload["dest"] = DEST_FILM
+      payload["dest"] = DEST_FILM.toLowerCase()
     } else {
       series = m.groups['name'].replace(/["."]/g,' ').trim()
       season = parseInt(m.groups['season'])
-      payload["dest"] = `${DEST_TV}/${series}/Season ${season}`
+      payload["dest"] = `${DEST_TV}/${series}/Season ${season}`.toLowerCase()
     }
     fileList.push(payload)
   }
