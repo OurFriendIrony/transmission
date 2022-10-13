@@ -127,7 +127,7 @@ function getError(err) {
   }
 }
 
-function getOk() {
+function getOK() {
   return {
     "status"  : "ok"
   }
