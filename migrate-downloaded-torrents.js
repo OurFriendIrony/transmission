@@ -80,12 +80,13 @@ function process(torrent){
         console.log(`[DELETED] ${resource["file"]}`)
       } else {
         shell.mkdir('-p', resource["dest"])
-        shell.exec(`chown -R pi:pi ${resource["src"]}/${resource["file"]}`)
         shell.mv(`${resource["src"]}/${resource["file"]}`, `${resource["dest"]}/${resource["file"]}`)
         console.log(`[MOVED  ] ${resource["file"]} => ${resource["dest"]}`)
       }
     })
   })
+  shell.exec(`sudo chown -R pi:pi "${DEST_TV}"`)
+  shell.exec(`sudo chown -R pi:pi "${DEST_FILM}"`)
 }
 
 //==================================================
