@@ -1,5 +1,5 @@
 const magnet = document.activeElement.href
-const host = "192.168.1.184"
+const host = "192.168.1.47"
 const port = "3000"
 
 console.log("Sending Magnet to transmission")
