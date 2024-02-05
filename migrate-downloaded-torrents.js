@@ -80,6 +80,7 @@ function process(torrent){
         console.log(`[DELETED] ${resource["file"]}`)
       } else {
         shell.mkdir('-p', resource["dest"])
+        shell.exec(`chown -R pi:pi ${resource["src"]}/${resource["file"]}`)
         shell.mv(`${resource["src"]}/${resource["file"]}`, `${resource["dest"]}/${resource["file"]}`)
         console.log(`[MOVED  ] ${resource["file"]} => ${resource["dest"]}`)
       }
