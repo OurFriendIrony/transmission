@@ -84,9 +84,11 @@ function process(torrent){
         console.log(`[MOVED  ] ${resource["file"]} => ${resource["dest"]}`)
       }
     })
+    shell.exec(`sudo chown -R pi:pi "${DEST_TV}"`)
+    shell.exec(`sudo chown -R pi:pi "${DEST_FILM}"`)
+    shell.exec(`sudo chmod -R g+w "${DEST_TV}"`)
+    shell.exec(`sudo chmod -R g+w "${DEST_FILM}"`)
   })
-  shell.exec(`sudo chown -R pi:pi "${DEST_TV}"`)
-  shell.exec(`sudo chown -R pi:pi "${DEST_FILM}"`)
 }
 
 //==================================================
