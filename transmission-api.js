@@ -130,7 +130,7 @@ function getTorrentById(id) {
 
 // Delete by Id
 function deleteTorrentById(id) {
-  execSync(`transmission-remote -t ${id} --remove-and-delete``).toString()
+  execSync(`transmission-remote -t ${id} --remove-and-delete`).toString()
   return getOK()
 }
 
