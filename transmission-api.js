@@ -66,10 +66,27 @@ app.get('/', (req, res) => {
   }
 })
 
+app.get('/restart/plex', (req, res) => {
+  console.log(`[GET   ] /restart/plex`)
+  try {
+    res.json(restartPlex())
+  } catch(err) {
+    res.status(400)
+  }
+})
+
 // Start Server
 app.listen(3000, () => {
   console.log('server started')
 })
+
+//==================================================
+// Other
+
+function restartPlex() {
+  out = execSync(`sysemctl restart plexmediaserver`).toString()
+  return getOK()
+}
 
 //==================================================
 // Parse transmission results

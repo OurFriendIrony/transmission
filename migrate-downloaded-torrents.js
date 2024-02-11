@@ -5,7 +5,7 @@ const fetch = require('node-fetch');
 
 //==================================================
 
-const HOST  = "192.168.1.47"
+const HOST  = "piplexed.local"
 const PORT  = "3000"
 const SLEEP = 60
 
