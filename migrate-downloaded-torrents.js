@@ -29,7 +29,7 @@ async function getTorrents() {
 
 // DELETE torrent by Id
 async function rmTorrent(id) {
-  const response = await fetch(`http://${HOST}:${PORT}/torrent/${id}`, {
+  const response = await fetch(`http://${HOST}:${PORT}/torrent/${id}/soft`, {
     method: "DELETE"
   });
   return await response.json()

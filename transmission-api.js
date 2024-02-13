@@ -36,7 +36,20 @@ app.delete('/torrent/:id', (req, res) => {
 
   console.log(`[DELETE] /torrent/${id}`)
   try {
-    res.json(deleteTorrentById(id))
+    res.json(deleteTorrentById(id, false))
+  } catch(err) {
+    res.status(400)
+    res.json(getError(err))
+  }
+})
+
+// DELETE Torrent
+app.delete('/torrent/:id/soft', (req, res) => {
+  id = req.params.id
+
+  console.log(`[DELETE] /torrent/${id}/soft`)
+  try {
+    res.json(deleteTorrentById(id, true))
   } catch(err) {
     res.status(400)
     res.json(getError(err))
@@ -129,8 +142,18 @@ function getTorrentById(id) {
 }
 
 // Delete by Id
+function deleteTorrentById(id, soft) {
+  if (soft) {
+    execSync(`transmission-remote -t ${id} -r`).toString()
+  } else
+    execSync(`transmission-remote -t ${id} --remove-and-delete`).toString()
+  }
+  return getOK()
+}
+
+// Delete by Id (soft)
 function deleteTorrentById(id) {
-  execSync(`transmission-remote -t ${id} --remove-and-delete`).toString()
+  execSync(`transmission-remote -t ${id} -r`).toString()
   return getOK()
 }
 
