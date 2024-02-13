@@ -145,15 +145,9 @@ function getTorrentById(id) {
 function deleteTorrentById(id, soft) {
   if (soft) {
     execSync(`transmission-remote -t ${id} -r`).toString()
-  } else
+  } else {
     execSync(`transmission-remote -t ${id} --remove-and-delete`).toString()
   }
-  return getOK()
-}
-
-// Delete by Id (soft)
-function deleteTorrentById(id) {
-  execSync(`transmission-remote -t ${id} -r`).toString()
   return getOK()
 }
 
